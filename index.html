@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poppy Playtime 2 - Web Fan Game</title>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    background:black;
+    font-family:Arial, sans-serif;
+}
+
+canvas{
+    display:block;
+    background:#111;
+}
+
+#title{
+    position:absolute;
+    top:10px;
+    width:100%;
+    text-align:center;
+    color:white;
+    font-size:24px;
+}
+
+.ui{
+    position:absolute;
+    bottom:20px;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+
+button{
+    padding:15px 20px;
+    font-size:18px;
+    border:none;
+    border-radius:12px;
+    background:#ff2e63;
+    color:white;
+    cursor:pointer;
+}
+
+button:active{
+    transform:scale(0.95);
+}
+</style>
+</head>
+
+<body>
+
+<div id="title">Escape de Huggy Wuggy</div>
+<canvas id="game"></canvas>
+
+<div class="ui">
+    <button onclick="useHands()">🖐 Manos</button>
+    <button onclick="jump()">⬆ Saltar</button>
+    <button onclick="crouch()">⬇ Agachar</button>
+    <button onclick="raiseHands()">🙌 Levantar</button>
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let player = {
+    x:150,
+    y:350,
+    width:40,
+    height:60,
+    dy:0,
+    jumping:false,
+    crouching:false
+};
+
+let huggy = {
+    x:800,
+    y:350,
+    size:80,
+    speed:2
+};
+
+function drawPlayer(){
+    ctx.fillStyle="cyan";
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+function drawHuggy(){
+    ctx.fillStyle="blue";
+    ctx.beginPath();
+    ctx.arc(huggy.x, huggy.y, huggy.size, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="black";
+    ctx.beginPath();
+    ctx.arc(huggy.x-25, huggy.y-20, 10, 0, Math.PI*2);
+    ctx.arc(huggy.x+25, huggy.y-20, 10, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="red";
+    ctx.fillRect(huggy.x-30, huggy.y+10, 60, 20);
+}
+
+function update(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // gravedad
+    player.y += player.dy;
+    player.dy += 0.5;
+
+    if(player.y > 350){
+        player.y = 350;
+        player.jumping = false;
+    }
+
+    // Huggy persigue
+    if(huggy.x > player.x){
+        huggy.x -= huggy.speed;
+    } else {
+        huggy.x += huggy.speed;
+    }
+
+    drawPlayer();
+    drawHuggy();
+
+    requestAnimationFrame(update);
+}
+
+function jump(){
+    if(!player.jumping){
+        player.dy = -12;
+        player.jumping = true;
+    }
+}
+
+function crouch(){
+    if(!player.crouching){
+        player.height = 30;
+        player.crouching = true;
+    } else {
+        player.height = 60;
+        player.crouching = false;
+    }
+}
+
+function useHands(){
+    huggy.speed = 0.5;
+    setTimeout(()=>{ huggy.speed = 2; },2000);
+}
+
+function raiseHands(){
+    alert("🙌 No me lastimes Huggy!");
+}
+
+update();
+</script>
+
+</body>
+</html>
